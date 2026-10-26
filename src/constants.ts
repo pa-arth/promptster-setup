@@ -58,6 +58,15 @@ export const STATIC_ENV: Readonly<Record<string, string>> = Object.freeze({
   // machine. Same stack, but an installer running against an older API would get
   // 415 on every batch.
   OTEL_EXPORTER_OTLP_PROTOCOL: 'http/protobuf',
+  // The session's repo (`vcs.repository.url.full` / owner / name / provider,
+  // derived from its `origin` remote) on every metric and event. Claude Code
+  // v2.1.269+; older versions ignore it. The headers helper sends the same repo,
+  // so on this path it is a cross-check — but it is the ONLY repo signal a
+  // managed-settings push without the helper has, which is why it is static.
+  OTEL_METRICS_INCLUDE_REPOSITORY: 'true',
+  // `app.version` on metrics (events already carry it). Lets the receiver tell
+  // "this machine's Claude Code is too old to send X" from "X never happened".
+  OTEL_METRICS_INCLUDE_VERSION: 'true',
 });
 
 /**

@@ -113,6 +113,10 @@ describe('install (tier B)', () => {
     // we rejected. Verified against real exporter bytes before the flip — see
     // STATIC_ENV in constants.ts and __fixtures__/otlp-protobuf/.
     expect(env.OTEL_EXPORTER_OTLP_PROTOCOL).toBe('http/protobuf');
+    // The repo and Claude Code version on every record — the only repo signal a
+    // managed-settings push without the headers helper has.
+    expect(env.OTEL_METRICS_INCLUDE_REPOSITORY).toBe('true');
+    expect(env.OTEL_METRICS_INCLUDE_VERSION).toBe('true');
     // Asserted against the constant, not a repeated literal: a hardcoded copy
     // here would have to be edited in lockstep with the thing it is checking,
     // which makes it a change-detector rather than a guard. The guard that the

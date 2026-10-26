@@ -36,7 +36,9 @@ anything. `npx @promptster/setup --token x --print` shows it without writing.
 ## What it writes
 
 **Tier A — telemetry.** `CLAUDE_CODE_ENABLE_TELEMETRY`, the OTLP exporter/protocol/
-endpoint/headers pair, and `OTEL_LOG_TOOL_DETAILS=1`. Plus `otelHeadersHelper`,
+endpoint/headers pair, `OTEL_LOG_TOOL_DETAILS=1`, and
+`OTEL_METRICS_INCLUDE_REPOSITORY=true` / `OTEL_METRICS_INCLUDE_VERSION=true` (the
+session's repo and the Claude Code version on every record, v2.1.269+). Plus `otelHeadersHelper`,
 pointing at `~/.promptster/otel-headers.mjs`: Claude Code runs it in the session's
 working directory and adds its output to every OTLP export as two headers —
 `X-Promptster-Repo` (the `origin` remote, credentials stripped) and
