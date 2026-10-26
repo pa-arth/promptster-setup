@@ -60,7 +60,10 @@ export function managedSettingsPath(): string | null {
     return '/Library/Application Support/ClaudeCode/managed-settings.json';
   }
   if (process.platform === 'win32') {
-    return 'C:\\ProgramData\\ClaudeCode\\managed-settings.json';
+    // Not C:\ProgramData: Claude Code stopped reading that legacy path
+    // (code.claude.com/docs/en/managed-settings), so checking it would miss a
+    // machine-wide disableAllHooks.
+    return 'C:\\Program Files\\ClaudeCode\\managed-settings.json';
   }
   return '/etc/claude-code/managed-settings.json';
 }
