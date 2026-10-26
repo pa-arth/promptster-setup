@@ -22,13 +22,15 @@ promptster setup — plan for $HOME/.claude/settings.json
 tier: B (telemetry + hooks)
 
 env
-  + CLAUDE_CODE_ENABLE_TELEMETRY = 1
-  + OTEL_LOGS_EXPORTER           = otlp
-  + OTEL_METRICS_EXPORTER        = otlp
-  + OTEL_EXPORTER_OTLP_PROTOCOL  = http/protobuf
-  + OTEL_LOG_TOOL_DETAILS        = 1
-  + OTEL_EXPORTER_OTLP_ENDPOINT  = https://api.promptster.ai/v1/teams/otel
-  + OTEL_EXPORTER_OTLP_HEADERS   = Authorization=Bearer ***redacted***
+  + CLAUDE_CODE_ENABLE_TELEMETRY    = 1
+  + OTEL_LOGS_EXPORTER              = otlp
+  + OTEL_METRICS_EXPORTER           = otlp
+  + OTEL_EXPORTER_OTLP_PROTOCOL     = http/protobuf
+  + OTEL_METRICS_INCLUDE_REPOSITORY = true
+  + OTEL_METRICS_INCLUDE_VERSION    = true
+  + OTEL_LOG_TOOL_DETAILS           = 1
+  + OTEL_EXPORTER_OTLP_ENDPOINT     = https://api.promptster.ai/v1/teams/otel
+  + OTEL_EXPORTER_OTLP_HEADERS      = Authorization=Bearer ***redacted***
 
 hooks
   + SessionStart               -> node "$HOME/.promptster/spool.mjs" --event SessionStart
