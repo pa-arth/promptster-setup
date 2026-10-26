@@ -97,7 +97,7 @@ The API this installer points at depends on this package and checks, in its own
 tests, that `DEFAULT_OTLP_ENDPOINT` composes onto the routes it serves and that
 the header names match the ones it reads.
 
-Releasing: bump `version` in `package.json` and merge. The publish workflow
+Releasing: bump `version` in `package.json` and merge. The publish workflow (npm trusted publishing, no token)
 pushes any version not already on npm.
 
 ## License

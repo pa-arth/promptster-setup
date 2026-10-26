@@ -5,8 +5,9 @@ name: Publish
 # console hands every engineer, so a stale package is the first thing a new
 # engineer hits. Bumping the version and merging is the whole release.
 #
-# Auth: the NPM_TOKEN repo secret (an automation token with publish rights on
-# @promptster). Without it the publish step logs a warning and exits 0.
+# Auth: npm trusted publishing (OIDC). npmjs.com trusts this repo's
+# publish.yml, so there is no token to store or rotate. Needs npm >= 11.5.1,
+# hence Node 24. A provenance attestation is attached automatically.
 
 on:
   push:
@@ -27,20 +28,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
       - run: npm ci
       - run: npm run build
       - run: npm test
 
       - name: Publish if version is new
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          if [ -z "${NODE_AUTH_TOKEN}" ]; then
-            echo "::warning::NPM_TOKEN not set — skipping publish."
-            exit 0
-          fi
           VERSION=$(node -p "require('./package.json').version")
           NAME=$(node -p "require('./package.json').name")
           # Skip only on a confirmed match; an inconclusive lookup still publishes
@@ -50,7 +45,7 @@ jobs:
             echo "${NAME}@${VERSION} already published — skipping."
             exit 0
           fi
-          if npm publish --provenance --access public 2>publish.err; then
+          if npm publish --access public 2>publish.err; then
             echo "Published ${NAME}@${VERSION}."
           elif grep -qiE "cannot publish over|already exists|409" publish.err; then
             echo "${NAME}@${VERSION} already exists — treating as success."
