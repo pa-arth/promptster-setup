@@ -1,0 +1,53 @@
+WHAT LEAVES THIS MACHINE
+  - session and prompt identifiers, and your Claude Code version
+  - model name, token counts (input, output, cached) and cost per request
+  - tool names, call counts, durations, and success/failure
+  - hook lifecycle events: which event fired, when, and its exit status
+  - each session's git origin URL (credentials stripped) and its folder relative to ~
+  - your Claude plan: plan type, rate-limit tier, seat tier, billing type and whether extra usage is on (never your email, name or account id)
+  - tool arguments — command lines and file paths kept, secrets scrubbed (see below)
+
+WHAT DOES NOT
+  - your prompts (OTEL_LOG_USER_PROMPTS is not written)
+  - Claude's responses (OTEL_LOG_ASSISTANT_RESPONSES is not written)
+  - raw API bodies (OTEL_LOG_RAW_API_BODIES is never written, under any flag)
+  - file contents, diffs, or source code at rest
+
+Tool arguments (the input to Read, Bash, Edit and friends) transit our endpoint. The
+receiver keeps command lines and file paths, with secrets scrubbed, and line counts of
+edits; file contents, edit text and command output are DROPPED at that boundary and
+never written to storage.
+
+promptster setup — plan for $HOME/.claude/settings.json
+tier: B (telemetry + hooks)
+
+env
+  + CLAUDE_CODE_ENABLE_TELEMETRY = 1
+  + OTEL_LOGS_EXPORTER           = otlp
+  + OTEL_METRICS_EXPORTER        = otlp
+  + OTEL_EXPORTER_OTLP_PROTOCOL  = http/protobuf
+  + OTEL_LOG_TOOL_DETAILS        = 1
+  + OTEL_EXPORTER_OTLP_ENDPOINT  = https://api.promptster.ai/v1/teams/otel
+  + OTEL_EXPORTER_OTLP_HEADERS   = Authorization=Bearer ***redacted***
+
+hooks
+  + SessionStart               -> node "$HOME/.promptster/spool.mjs" --event SessionStart
+  + UserPromptSubmit           -> node "$HOME/.promptster/spool.mjs" --event UserPromptSubmit
+  + PreToolUse       matcher=* -> node "$HOME/.promptster/spool.mjs" --event PreToolUse
+  + PostToolUse      matcher=* -> node "$HOME/.promptster/spool.mjs" --event PostToolUse
+  + Stop                       -> node "$HOME/.promptster/spool.mjs" --event Stop
+  + SubagentStop               -> node "$HOME/.promptster/spool.mjs" --event SubagentStop
+  + PreCompact                 -> node "$HOME/.promptster/spool.mjs" --event PreCompact
+  + SessionEnd                 -> node "$HOME/.promptster/spool.mjs" --event SessionEnd
+  (appended — every hook already in this file keeps its place and its contents)
+
+settings
+  + otelHeadersHelper = node "$HOME/.promptster/otel-headers.mjs"
+
+files
+  + $HOME/.promptster/otel-headers.mjs
+  + $HOME/.promptster/spool.mjs
+
+nothing else in settings.json is read, moved, or rewritten.
+
+--print: nothing was written.

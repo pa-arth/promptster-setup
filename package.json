@@ -1,0 +1,38 @@
+{
+  "name": "@promptster/setup",
+  "version": "0.2.0",
+  "description": "npx enrollment installer for Claude Code and Codex telemetry capture",
+  "bin": {
+    "promptster-setup": "dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.10",
+    "typescript": "^5.6.3",
+    "vitest": "^4.0.18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pa-arth/promptster-setup.git"
+  },
+  "homepage": "https://github.com/pa-arth/promptster-setup#readme"
+}

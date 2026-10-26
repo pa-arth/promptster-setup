@@ -1,0 +1,34 @@
+// Typecheck-only project: the SAME sources as tsconfig.json PLUS the test files
+// and fixtures that one excludes, with no emit.
+//
+// Why the split. tsconfig.json is the BUILD, and its exclude is there so test
+// files never land in dist — a real constraint, and the reason "just delete the
+// exclude" is not the fix. But it meant tsc never looked at a test file at all,
+// so a fixture could drift out of the shape it claims and no gate noticed. That
+// is the same failure mode as the hand-rolled test doubles that pattern-matched
+// on argument shape and silently stopped observing: nothing red, nothing to see,
+// coverage that isn't there. `pnpm typecheck` points HERE.
+//
+// noUncheckedIndexedAccess is OFF, and only here. Every src file is still
+// compiled with it ON by `pnpm build`, which runs first in both `pnpm typecheck`
+// and CI — this project cannot weaken that. What it drops is `rows[0]` being
+// `T | undefined` inside a test, which is ~600 assertions' worth of `!` and no
+// signal: a test that indexes past the end fails loudly the moment it runs. The
+// errors worth having here are SHAPE errors (a property that doesn't exist, an
+// argument that doesn't fit), and those are unaffected.
+//
+// `exclude` below is the debt, not the design. Each entry is a test file that
+// does not typecheck yet; the list is expected to SHRINK and never grow. A new
+// test file is covered from birth — you have to add a line to opt out, and that
+// line is a thing a reviewer can see.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "noUncheckedIndexedAccess": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": []
+}
