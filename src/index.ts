@@ -42,5 +42,6 @@ export {
   OTEL_HEADERS_HELPER_COMMAND,
   REPO_HEADER,
   WORKDIR_HEADER,
+  PLAN_HEADER,
 } from './constants.js';
 export type { Settings, HookGroup, HookCommand } from './settingsFile.js';
